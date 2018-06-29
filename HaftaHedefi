@@ -1,5 +1,10 @@
+25062018
 
 Bu haftanın konusu anomaly detection. 
 Detection işlemi için c# kullanılarak girilen veriler arasında anormal olanları bulan basit bir kod örneği oluşturulmaya çalışacak.
 Hafta sonunda proje için hedef; girilen renkler arasından farklı olanın program tarafından bulunması hadi kolay gelsin.
 :)
+
+29062018 Tarihli
+
+- Textboxtan girilen verinin bir id ile alınması ve id numarası ve sayısına bağlı olarak veri işleme yapılması 

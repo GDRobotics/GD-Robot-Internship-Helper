@@ -8,3 +8,11 @@ Hafta sonunda proje için hedef; girilen renkler arasından farklı olanın prog
 29062018 Tarihli
 
 - Textboxtan girilen verinin bir id ile alınması ve id numarası ve sayısına bağlı olarak veri işleme yapılması 
+
+
+03072018 :::
+- dinamik array hazırla (Listlere bak )   List<double>
+- listviewe eleman ekledikçe (eğer listede varsa arrayin aynı indexinin arttır eğer yoksa dinamik arraye yeni eleman ekle 
+eklerken 1 eklenecek sayaç değeri çünükü listviewe eklenen değer girilmiş oldu )
+- bu array kullanılarak 2 boyutlu başka bir array oluşturulacak. 
+- oluşan iki boyutlu array anomaly için fonksiyona yollanacak.

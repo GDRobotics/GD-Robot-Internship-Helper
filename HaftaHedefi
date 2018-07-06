@@ -16,3 +16,10 @@ Hafta sonunda proje için hedef; girilen renkler arasından farklı olanın prog
 eklerken 1 eklenecek sayaç değeri çünükü listviewe eklenen değer girilmiş oldu )
 - bu array kullanılarak 2 boyutlu başka bir array oluşturulacak. 
 - oluşan iki boyutlu array anomaly için fonksiyona yollanacak.
+
+
+060720018 ::::
+-Textbox ta verilen verinin testinin yapılarak anomaly verisinin alınması
+-Decide kısmına gönderilen verilen test edilecek veri olması gerekli 
+bu nedenle textboxtan(test verisi alan textbox) alınan verinin double a convert işlemi yapılarak convertten elde edilen double decide
+komutu sayesinde kontrol edilerek anomaly olup olmadığı dönütü alınacak.

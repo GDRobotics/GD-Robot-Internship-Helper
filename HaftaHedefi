@@ -21,5 +21,8 @@ eklerken 1 eklenecek sayaç değeri çünükü listviewe eklenen değer girilmi�
 060720018 ::::
 -Textbox ta verilen verinin testinin yapılarak anomaly verisinin alınması
 -Decide kısmına gönderilen verilen test edilecek veri olması gerekli 
-bu nedenle textboxtan(test verisi alan textbox) alınan verinin double a convert işlemi yapılarak convertten elde edilen double decide
-komutu sayesinde kontrol edilerek anomaly olup olmadığı dönütü alınacak.
+bu nedenle textboxtan(test verisi alan textbox) alınan verinin
+double a convert işlemi yapılarak
+convertten elde edilen double 
+decide komutu sayesinde kontrol edilerek 
+anomaly olup olmadığı dönütü alınacak.

@@ -26,8 +26,8 @@ namespace anomalyyyyyyy
 
             if (a == 1)
             {
-                double j = Convert.ToDouble(textBox2.Text);
-                txt = new double[] { j };
+             //   double j = Convert.ToDouble(textBox2.Text);
+             //   txt = new double[] { j };
 
 
                 if (k.Decide(txt) == true)
@@ -104,8 +104,8 @@ namespace anomalyyyyyyy
         private void button2_Click(object sender, EventArgs e)
         {
             int i = 0;
-            if (a == 1)
-            {
+            a = 1;
+            
                  if (listBox1.Items.Contains(textBox2.Text) == true)
                 {
                     i = listBox1.Items.IndexOf(textBox2.Text);
@@ -116,7 +116,7 @@ namespace anomalyyyyyyy
                     i = listBox1.Items.IndexOf(textBox2.Text) + 1;
 
                 }
-            }
+            
             gdrobotics(gd);
         }
 
@@ -132,21 +132,21 @@ namespace anomalyyyyyyy
             {
                 string metin = textBox2.Text;
                 int i = 0;
-                if (a == 1)
-                {
+                a = 1;
+                
 
                     if (listBox1.Items.Contains(textBox2.Text) == true)
                     {
                         i = listBox1.Items.IndexOf(textBox2.Text);
-                        double[] txt=Convert.ToDouble(i);
+                      txt = new double[] { i, gd[i][1] }; 
                     }
                     else
                     {
                         i = listBox1.Items.IndexOf(textBox2.Text) + 1;
 
-                    }
+                    
                 }
-                    gdrobotics(txt);
+                    gdrobotics(gd);
                     textBox2.Text = "";
                 
 

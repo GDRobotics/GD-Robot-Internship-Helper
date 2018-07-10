@@ -1,0 +1,159 @@
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using Accord.MachineLearning.VectorMachines.Learning;
+using Accord.Statistics.Kernels;
+namespace anomalyyyyyyy
+{
+    public partial class Form1 : Form
+
+    {
+        double[][] b;
+        int a = 0;
+        private double[] txt;
+        List<double> gd2 = new List<double>();
+       
+
+        double[][] gd = new double[8][]
+        {new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},
+            new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0}, };
+        public void gdrobotics(double[][] gd)
+        {
+
+            var teacher = new OneclassSupportVectorLearning<ChiSquare>();
+            var k = teacher.Learn(gd);
+
+
+            if (a == 1)
+            {
+                double j = Convert.ToDouble(textBox2.Text);
+                txt = new double[] { j };
+
+
+                if (k.Decide(txt) == true)
+                {
+                    a = 0;
+                    MessageBox.Show(" Ok = ");
+                }
+                else MessageBox.Show(" Anomaly= ");
+            }
+
+        }
+
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string metin = textBox1.Text;
+
+
+            int i = 0;
+            textBox1.Text = "";
+
+            if (gd2 != null)
+            {
+
+                for (i = 0; i < gd2.Count; i++)
+                {
+                    gd[i][0] = i;
+                    gd[i][1] = gd2[i];
+
+                }
+            }
+
+            gdrobotics(gd);
+        }
+
+
+
+        private void button1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string metin = textBox1.Text;
+                int i = 0;
+                if (listBox1.Items.Contains(textBox1.Text) == true)
+                {
+                    i = listBox1.Items.IndexOf(textBox1.Text);
+                    gd2[i] = gd2[i] + 1;
+
+                }
+                else
+                {
+                    listBox1.Items.Add(metin);
+                    gd2.Add(1);
+                }
+                textBox1.Text = "";
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int i = 0;
+            if (a == 1)
+            {
+                 if (listBox1.Items.Contains(textBox2.Text) == true)
+                {
+                    i = listBox1.Items.IndexOf(textBox2.Text);
+
+                }
+                else
+                {
+                    i = listBox1.Items.IndexOf(textBox2.Text) + 1;
+
+                }
+            }
+            gdrobotics(gd);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                string metin = textBox2.Text;
+                int i = 0;
+                if (a == 1)
+                {
+
+                    if (listBox1.Items.Contains(textBox2.Text) == true)
+                    {
+                        i = listBox1.Items.IndexOf(textBox2.Text);
+                        double[] txt=Convert.ToDouble(i);
+                    }
+                    else
+                    {
+                        i = listBox1.Items.IndexOf(textBox2.Text) + 1;
+
+                    }
+                }
+                    gdrobotics(txt);
+                    textBox2.Text = "";
+                
+
+
+            }
+        }
+    }
+}
+    
+

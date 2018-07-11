@@ -1,0 +1,108 @@
+#region Assembly Accord.MachineLearning, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7
+// C:\Users\Okan\documents\visual studio 2015\Projects\anomalyyyyyyy\packages\Accord.MachineLearning.3.8.0\lib\net45\Accord.MachineLearning.dll
+#endregion
+
+using System;
+using System.Threading;
+using Accord.Statistics.Kernels;
+
+namespace Accord.MachineLearning.VectorMachines.Learning
+{
+    //
+    // Summary:
+    //     One-class Support Vector Machine Learning Algorithm.
+    public abstract class BaseOneclassSupportVectorLearning<TModel, TKernel, TInput> : IUnsupervisedLearning<TModel, TInput, bool>
+        where TModel : ISupportVectorMachine<TInput>
+        where TKernel : IKernel<TInput>
+    {
+        //
+        // Summary:
+        //     Constructs a new one-class support vector learning algorithm.
+        public BaseOneclassSupportVectorLearning();
+        //
+        // Summary:
+        //     Constructs a new one-class support vector learning algorithm.
+        //
+        // Parameters:
+        //   machine:
+        //     A support vector machine.
+        public BaseOneclassSupportVectorLearning(TModel machine);
+        //
+        // Summary:
+        //     Obsolete.
+        protected BaseOneclassSupportVectorLearning(ISupportVectorMachine<TInput> model, TInput[] input);
+
+        //
+        // Summary:
+        //     Gets or sets the kernel function use to create a kernel Support Vector Machine.
+        //     If this property is set, Accord.MachineLearning.VectorMachines.Learning.BaseOneclassSupportVectorLearning`3.UseKernelEstimation
+        //     will be set to false.
+        public TKernel Kernel { get; set; }
+        //
+        // Summary:
+        //     Gets the value for the Lagrange multipliers (alpha) for every observation vector.
+        public double[] Lagrange { get; }
+        //
+        // Summary:
+        //     Gets or sets the classifier being learned.
+        public TModel Model { get; set; }
+        //
+        // Summary:
+        //     Controls the number of outliers accepted by the algorithm. This value provides
+        //     an upper bound on the fraction of training errors and a lower bound of the fraction
+        //     of support vectors. Default is 0.5
+        //
+        // Remarks:
+        //     The summary description is given in Chang and Lin, "LIBSVM: A Library for Support
+        //     Vector Machines", 2013.
+        public double Nu { get; set; }
+        //
+        // Summary:
+        //     Gets or sets a value indicating whether to use shrinking heuristics during learning.
+        //     Default is true.
+        public bool Shrinking { get; set; }
+        //
+        // Summary:
+        //     Gets or sets a cancellation token that can be used to stop the learning algorithm
+        //     while it is running.
+        public CancellationToken Token { get; set; }
+        //
+        // Summary:
+        //     Convergence tolerance. Default value is 1e-2.
+        //
+        // Remarks:
+        //     The criterion for completing the model training process. The default is 0.01.
+        public double Tolerance { get; set; }
+        //
+        // Summary:
+        //     Gets or sets whether initial values for some kernel parameters should be estimated
+        //     from the data, if possible. Default is true.
+        public bool UseKernelEstimation { get; set; }
+
+        //
+        // Summary:
+        //     Learns a model that can map the given inputs to the desired outputs.
+        //
+        // Parameters:
+        //   x:
+        //     The model inputs.
+        //
+        //   weights:
+        //     The weight of importance for each input sample.
+        //
+        // Returns:
+        //     A model that has learned how to produce suitable outputs given the input data
+        //     x.
+        public TModel Learn(TInput[] x, double[] weights = null);
+        //
+        // Summary:
+        //     Obsolete.
+        [Obsolete]
+        public double Run();
+        //
+        // Summary:
+        //     Creates an instance of the model to be learned. Inheritors of this abstract class
+        //     must define this method so new models can be created from the training data.
+        protected abstract TModel Create(int inputs, TKernel kernel);
+    }
+}

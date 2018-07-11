@@ -1,0 +1,23 @@
+#region Assembly Accord.MachineLearning, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7
+// C:\Users\Okan\documents\visual studio 2015\Projects\anomalyyyyyyy\packages\Accord.MachineLearning.3.8.0\lib\net45\Accord.MachineLearning.dll
+#endregion
+
+using Accord.Statistics.Kernels;
+
+namespace Accord.MachineLearning.VectorMachines.Learning
+{
+    //
+    // Summary:
+    //     One-class Support Vector Machine learning algorithm.
+    public class OneclassSupportVectorLearning<TKernel> : BaseOneclassSupportVectorLearning<SupportVectorMachine<TKernel>, TKernel, double[]> where TKernel : IKernel<double[]>
+    {
+        public OneclassSupportVectorLearning();
+
+        //
+        // Summary:
+        //     Creates an instance of the model to be learned. Inheritors of this abstract class
+        //     must define this method so new models can be created from the training data.
+        protected override SupportVectorMachine<TKernel> Create(int inputs, TKernel kernel);
+    }
+}
+--------------------------------------------------

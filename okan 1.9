@@ -1,0 +1,340 @@
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using Accord.MachineLearning.VectorMachines.Learning;
+using Accord.Statistics.Kernels;
+using System.Linq;
+using Accord.MachineLearning;
+using Accord.Math.Optimization.Losses;
+
+namespace anomalyyyyyyy
+{
+    public partial class Form1 : Form
+          
+    {
+        static void UpdateMeans(double[][] gd, int[] clustering, double[][] means)
+        {
+            int numClusters = means.Length;
+            for (int k = 0; k < means.Length; ++k)
+                for (int j = 0; j < means[k].Length; ++j)
+                    means[k][j] = 0.0;
+            int[] clusterCounts = new int[numClusters];
+            for (int i = 0; i < gd.Length; ++i)
+            {
+                int cluster = clustering[i];
+                ++clusterCounts[cluster];
+                for (int j = 0; j <gd[i].Length; ++j)
+                    means[cluster][j] += gd[i][j];
+            }
+            for (int k = 0; k < means.Length; ++k)
+                for (int j = 0; j < means[k].Length; ++j)
+                    means[k][j] /= clusterCounts[k]; // danger
+            return;
+        }
+        static double[][] Allocate(int numClusters, int numAttributes)
+        {
+            double[][] result = new double[numClusters][];
+            for (int k = 0; k < numClusters; ++k)
+                result[k] = new double[numAttributes];
+            return result;
+        }
+        static double[] ComputeCentroid(double[][] gd, int[] clustering,
+      int cluster, double[][] means)
+        {
+            int numAttributes = means[0].Length;
+            double[] centroid = new double[numAttributes];
+            double minDist = double.MaxValue;
+            for (int i = 0; i < gd.Length; ++i) // walk thru each data tuple
+            {
+                int c = clustering[i];
+                if (c != cluster) continue;
+                double currDist = Distance(gd[i], means[cluster]);
+                if (currDist < minDist)
+                {
+                    minDist = currDist;
+                    for (int j = 0; j < centroid.Length; ++j)
+                        centroid[j] = gd[i][j];
+                }
+            }
+            return centroid;
+        }
+        static void UpdateCentroids(double[][] gd, int[] clustering,
+      double[][] means, double[][] centroids)
+        {
+            for (int k = 0; k < centroids.Length; ++k)
+            {
+                double[] centroid = ComputeCentroid(gd, clustering, k, means);
+                centroids[k] = centroid;
+            }
+        }
+        static double Distance(double[] tuple, double[] vector)
+        {
+            double sumSquaredDiffs = 0.0;
+            for (int j = 0; j < tuple.Length; ++j)
+                sumSquaredDiffs += Math.Pow((tuple[j] - vector[j]), 2);
+            return Math.Sqrt(sumSquaredDiffs);
+        }
+        static bool Assign(double[][] gd,
+      int[] clustering, double[][] centroids)
+        {
+            int numClusters = centroids.Length;
+            bool changed = false;
+            double[] distances = new double[numClusters];
+            for (int i = 0; i < gd.Length; ++i)
+            {
+                for (int k = 0; k < numClusters; ++k)
+                    distances[k] = Distance(gd[i], centroids[k]);
+                int newCluster = MinIndex(distances);
+                if (newCluster != clustering[i])
+                {
+                    changed = true;
+                    clustering[i] = newCluster;
+                }
+            }
+            return changed;
+        }
+        static int MinIndex(double[] distances)
+        {
+            int indexOfMin = 0;
+            double smallDist = distances[0];
+            for (int k = 0; k < distances.Length; ++k)
+            {
+                if (distances[k] < smallDist)
+                {
+                    smallDist = distances[k]; indexOfMin = k;
+                }
+            }
+            return indexOfMin;
+        }
+
+        static int[] Cluster(double[][] gd, int numClusters,
+             int numAttributes, int maxCount)
+        {
+            bool changed = true;
+            int ct = 0;
+            int numTuples = gd.Length;
+            int[] clustering = InitClustering(numTuples, numClusters, 0);
+            double[][] means = Allocate(numClusters, numAttributes);
+            double[][] centroids = Allocate(numClusters, numAttributes);
+            UpdateMeans(gd, clustering, means);
+            UpdateCentroids(gd, clustering, means, centroids);
+            while (changed == true && ct < maxCount)
+            {
+                ++ct;
+                changed = Assign(gd, clustering, centroids);
+                UpdateMeans(gd, clustering, means);
+                UpdateCentroids(gd, clustering, means, centroids);
+            }
+            return clustering;
+        }
+        static int[] InitClustering(int numTuples,
+      int numClusters, int randomSeed)
+        {
+            Random random = new Random(randomSeed);
+            int[] clustering = new int[numTuples];
+            for (int i = 0; i < numClusters; ++i)
+                clustering[i] = i;
+            for (int i = numClusters; i < clustering.Length; ++i)
+                clustering[i] = random.Next(0, numClusters);
+            return clustering;
+        }
+        static double[] Outlier(double[][] gd, int[] clustering,
+      int numClusters, int cluster)
+        {
+            int numAttributes = gd[0].Length;
+            double[] outlier = new double[numAttributes];
+            double maxDist = 0.0;
+            double[][] means = Allocate(numClusters, numAttributes);
+            double[][] centroids = Allocate(numClusters, numAttributes);
+            UpdateMeans(gd, clustering, means);
+            UpdateCentroids(gd, clustering, means, centroids);
+            for (int i = 0; i < gd.Length; ++i)
+            {
+                int c = clustering[i];
+                if (c != cluster) continue;
+                double dist = Distance(gd[i], centroids[cluster]);
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    Array.Copy(gd[i], outlier, gd[i].Length);
+                }
+            }
+            return outlier;
+        }
+
+        int a = 0;
+        double[] txt;
+        List<double> gd2 = new List<double>();
+     
+       double[][] gd = new double[8][]
+             {new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},
+            new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0},new double[] { 0, 0} };
+     
+        public void gdrobotics(double[][] gd)
+        {
+
+            var teacher = new OneclassSupportVectorLearning<Gaussian>();
+            
+
+
+            var k = teacher.Learn(gd);
+    
+            if (a == 1)
+            {
+                if (k.Decide(txt) == true)
+                {
+                    a = 0;
+                    MessageBox.Show("ok  ");
+                }
+                else MessageBox.Show(" anomaly");
+            }
+
+
+        }
+
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string metin = textBox1.Text;
+
+
+            int i = 0;
+            textBox1.Text = "";
+
+            if (gd2 != null)
+            {
+               
+               
+            
+                for (i = 0; i < gd2.Count; i++)
+                {
+                    gd[i][0]= i;
+                    gd[i][1]= gd2[i];
+
+                }
+            }
+
+            //MessageBox.Show(gd[i][0].ToString());
+            //MessageBox.Show(gd[i][1].ToString());
+            int numClusters = 2;
+            int maxCount = 30;
+            int num Attributes = attributes.Length;
+            int[] clustering = Cluster(gd, numClusters, numAttributes, maxCount);
+            gdrobotics(gd);
+        }
+
+
+
+        private void button1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string metin = textBox1.Text;
+                int i = 0;
+                if (listBox1.Items.Contains(textBox1.Text) == true)
+                {
+                    i = listBox1.Items.IndexOf(textBox1.Text);
+                    gd2[i] = gd2[i] + 1;
+
+                }
+                else
+                {
+                    listBox1.Items.Add(metin);
+                    gd2.Add(1);
+                }
+                textBox1.Text = "";
+               
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int i = 0;
+
+            a = 1;
+            
+            if (listBox1.Items.Contains(textBox2.Text) == true)
+            {
+                i = listBox1.Items.IndexOf(textBox2.Text);
+                MessageBox.Show(i.ToString());
+                    txt = new double[] { i, gd[i][0]};
+
+            }
+            else
+            {
+                a = 0;
+                MessageBox.Show("Anomaly");
+                
+            }
+
+
+            gdrobotics(gd);
+
+            a = 0;
+            textBox2.Text = "";
+        }
+        
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == Keys.Enter)
+
+            {
+                string metin = textBox2.Text;
+                int i;
+               
+                a = 1;
+
+                if (listBox1.Items.Contains(textBox2.Text) == true)
+                {
+                    i = listBox1.Items.IndexOf(textBox2.Text);
+                   
+                    MessageBox.Show(listBox1.Items[i].ToString());
+                    txt = new double[] { i, gd[i][0]};
+                    MessageBox.Show(gd[i][0].ToString());
+                    MessageBox.Show(gd[i][1].ToString());
+
+                    int numClusters = 2;
+                    int maxCount = 30;
+     
+         
+                }
+                else
+                {
+                    a = 0;
+                    MessageBox.Show("Anomaly");
+                   
+                }
+              
+                gdrobotics(gd);
+                textBox2.Text = "";
+                a = 0;
+
+                
+            }
+        }
+    }
+}
+    
+

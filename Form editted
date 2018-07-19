@@ -1,0 +1,268 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KMeans
+{
+    class Program
+    {
+        static void UpdateMeans(double[][] rawData, int[] clustering,
+  double[][] means)
+        {
+            int numClusters = means.Length;
+            for (int k = 0; k < means.Length; ++k)
+                for (int j = 0; j < means[k].Length; ++j)
+                    means[k][j] = 0.0;
+            int[] clusterCounts = new int[numClusters];
+            for (int i = 0; i < rawData.Length; ++i)
+            {
+                int cluster = clustering[i];
+                ++clusterCounts[cluster];
+                for (int j = 0; j < rawData[i].Length; ++j)
+                    means[cluster][j] += rawData[i][j];
+            }
+            for (int k = 0; k < means.Length; ++k)
+                for (int j = 0; j < means[k].Length; ++j)
+                    means[k][j] /= clusterCounts[k]; // danger
+            return;
+        }
+        static double[] ComputeCentroid(double[][] rawData, int[] clustering,
+  int cluster, double[][] means)
+        {
+            int numAttributes = means[0].Length;
+            double[] centroid = new double[numAttributes];
+            double minDist = double.MaxValue;
+            for (int i = 0; i < rawData.Length; ++i) // walk thru each data tuple
+            {
+                int c = clustering[i];
+                if (c != cluster) continue;
+                double currDist = Distance(rawData[i], means[cluster]);
+                if (currDist < minDist)
+                {
+                    minDist = currDist;
+                    for (int j = 0; j < centroid.Length; ++j)
+                        centroid[j] = rawData[i][j];
+                }
+            }
+            return centroid;
+        }
+        static void UpdateCentroids(double[][] rawData, int[] clustering,
+  double[][] means, double[][] centroids)
+        {
+            for (int k = 0; k < centroids.Length; ++k)
+            {
+                double[] centroid = ComputeCentroid(rawData, clustering, k, means);
+                centroids[k] = centroid;
+            }
+        }
+        static double Distance(double[] tuple, double[] vector)
+        {
+            
+            double sumSquaredDiffs = 0.0;
+            for (int j = 0; j < tuple.Length; ++j)
+            {
+                Console.WriteLine("Gelen elemanlar:"+tuple[j]+" ile"+vector[j]+" sonuç:   "+Math.Pow((tuple[j] - vector[j]), 2));
+                sumSquaredDiffs += Math.Pow((tuple[j] - vector[j]), 2);
+            }
+                return Math.Sqrt(sumSquaredDiffs);
+        }
+        static bool Assign(double[][] rawData,int[] clustering, double[][] centroids)
+        {
+            int numClusters = centroids.Length;
+            bool changed = false;
+            double[] distances = new double[numClusters];
+            for (int i = 0; i < rawData.Length; ++i)
+            {
+                for (int k = 0; k < numClusters; ++k)
+                    distances[k] = Distance(rawData[i], centroids[k]);
+                int newCluster = MinIndex(distances);
+                if (newCluster != clustering[i])
+                {
+                    changed = true;
+                    clustering[i] = newCluster;
+                }
+            }
+            return changed;
+        }
+        static int MinIndex(double[] distances)
+        {
+            int indexOfMin = 0;
+            double smallDist = distances[0];
+            for (int k = 0; k < distances.Length; ++k)
+            {
+                if (distances[k] < smallDist)
+                {
+                    smallDist = distances[k]; indexOfMin = k;
+                }
+            }
+            return indexOfMin;
+        }
+        static double[][] Allocate(int numClusters, int numAttributes)
+        {
+            double[][] result = new double[numClusters][];
+            for (int k = 0; k < numClusters; ++k)
+                result[k] = new double[numAttributes];
+            return result;
+        }
+        static int[] Cluster(double[][] rawData, int numClusters,
+  int numAttributes, int maxCount)
+        {
+            bool changed = true;
+            int ct = 0;
+            int numTuples = rawData.Length;
+            int[] clustering = InitClustering(numTuples, numClusters, 0);
+            Console.WriteLine("Cluster:"+clustering);
+            double[][] means = Allocate(numClusters, numAttributes);
+            Console.WriteLine("Clustering means:"+ArrayPresser(means));
+            double[][] centroids = Allocate(numClusters, numAttributes);
+            Console.WriteLine( "Clustering centroids:"+ArrayPresser(centroids));
+            UpdateMeans(rawData, clustering, means);
+            UpdateCentroids(rawData, clustering, means, centroids);
+            while (changed == true && ct < maxCount)
+            {
+                ++ct;
+                changed = Assign(rawData, clustering, centroids);
+                Console.WriteLine("changed:"+changed+ct);
+                UpdateMeans(rawData, clustering, means);
+                UpdateCentroids(rawData, clustering, means, centroids);
+            }
+            return clustering;
+        }
+        static int[] InitClustering(int numTuples,
+  int numClusters, int randomSeed)
+        {
+            Random random = new Random(randomSeed);
+            int[] clustering = new int[numTuples];
+            for (int i = 0; i < numClusters; ++i)
+                clustering[i] = i;
+            for (int i = numClusters; i < clustering.Length; ++i)
+                clustering[i] = random.Next(0, numClusters);
+            return clustering;
+        }
+        static double[] Outlier(double[][] rawData, int[] clustering,
+   int numClusters, int cluster)
+        {
+            int numAttributes = rawData[0].Length;
+            Console.WriteLine(numAttributes);
+            double[] outlier = new double[numAttributes];
+            double maxDist = 0.0;
+            double[][] means = Allocate(numClusters, numAttributes);
+            Console.WriteLine(ArrayPresser(means));
+            double[][] centroids = Allocate(numClusters, numAttributes);
+            Console.WriteLine(ArrayPresser(centroids));
+            UpdateMeans(rawData, clustering, means);
+            UpdateCentroids(rawData, clustering, means, centroids);
+            for (int i = 0; i < rawData.Length; ++i)
+            {
+                int c = clustering[i];
+                Console.WriteLine("cluster"+c);
+                if (c != cluster) continue;
+                Console.WriteLine( rawData[i]+" ile "+ centroids[cluster]);
+                Console.WriteLine(rawData[i][0] + " ile " + centroids[cluster][0]);
+                Console.WriteLine(rawData[i][1] + " ile " + centroids[cluster][1]);
+                double dist = Distance(rawData[i], centroids[cluster]);
+                Console.WriteLine("dist:"+dist);
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    Array.Copy(rawData[i], outlier, rawData[i].Length);
+                }
+                Console.WriteLine("Max Dist: "+maxDist);
+            }
+            return outlier;
+        }
+
+        private static String ArrayPresser(double[][] means)
+        {
+            String okan="";
+            for(int i = 0; i < means.Length; i++)
+            {
+                okan = okan + means[i][0]+means[i][1];
+            }
+            return okan;
+        }
+
+        static void ShowMatrix(double[][] matrix)
+        {
+            for (int i = 0; i < matrix.Length; ++i)
+            {
+                Console.Write("[" + i.ToString().PadLeft(2) + "]  ");
+                for (int j = 0; j < matrix[i].Length; ++j)
+                    Console.Write(matrix[i][j].ToString("F1") + "  ");
+                Console.WriteLine("");
+            }
+        }
+        static void ShowVector(int[] vector)
+        {
+            for (int i = 0; i < vector.Length; ++i)
+                Console.Write(vector[i] + " ");
+            Console.WriteLine("");
+        }
+        static void ShowVector(double[] vector)
+        {
+            for (int i = 0; i < vector.Length; ++i)
+                Console.Write(vector[i].ToString("F1") + " ");
+            Console.WriteLine("");
+        }
+        static void ShowClustering(double[][] rawData,
+  int numClusters, int[] clustering)
+        {
+            for (int k = 0; k < numClusters; ++k) // Each cluster
+            {
+                for (int i = 0; i < rawData.Length; ++i) // Each tuple
+                    if (clustering[i] == k)
+                    {
+                        for (int j = 0; j < rawData[i].Length; ++j)
+                            Console.Write(rawData[i][j].ToString("F1") + " ");
+                        Console.WriteLine("");
+                    }
+                Console.WriteLine("");
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            try
+            {
+                Console.WriteLine("\nBegin outlier data detection demo\n");
+                Console.WriteLine("Loading all (height-weight) data into memory");
+                string[] attributes = new string[] { "Index", "Count" };
+                double[][] rawData = new double[8][];
+                for (int i = 0; i < 8; i++)
+                {
+                    Console.WriteLine("İndex:" + i);
+                    rawData[i] = new double[] {i, Convert.ToDouble(Console.ReadLine()) };
+                }
+                Console.WriteLine("\nRaw data:\n");
+                ShowMatrix(rawData);
+                int numAttributes = attributes.Length;
+                int numClusters = 1;
+                int maxCount = 30;
+                Console.WriteLine("\nk = " + numClusters + " and maxCount = " + maxCount);
+                int[] clustering = Cluster(rawData, numClusters, numAttributes, maxCount);
+                Console.WriteLine("\nClustering complete");
+                Console.WriteLine("\nClustering in internal format: \n");
+                ShowVector(clustering);
+                Console.WriteLine("\nClustered data:");
+                ShowClustering(rawData, numClusters, clustering);
+                double[] outlier = Outlier(rawData, clustering, numClusters, 0);
+                Console.WriteLine( "outlier length:"+outlier.Length);
+                for(int i = 0; i < outlier.Length; i++)
+                {
+                    Console.WriteLine("index "+i+": "+outlier[i]);
+                }
+                Console.WriteLine("outlier 0 "+outlier[0]);
+                Console.WriteLine("Outlier for cluster 0 is:");
+                ShowVector(outlier);
+                Console.WriteLine("\nEnd demo\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.ReadKey();
+        }
+    }
+}

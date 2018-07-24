@@ -1,24 +1,19 @@
-25062018
 
-Bu haftanın konusu anomaly detection. 
-Detection işlemi için c# kullanılarak girilen veriler arasında anormal olanları bulan basit bir kod örneği oluşturulmaya çalışacak.
-Hafta sonunda proje için hedef; girilen renkler arasından farklı olanın program tarafından bulunması hadi kolay gelsin.
-:)
-
-29062018 Tarihli
-
-- Textboxtan girilen verinin bir id ile alınması ve id numarası ve sayısına bağlı olarak veri işleme yapılması 
-
-
-03072018 :::
-- dinamik array hazırla (Listlere bak )   List<double>
-- listviewe eleman ekledikçe (eğer listede varsa arrayin aynı indexinin arttır eğer yoksa dinamik arraye yeni eleman ekle 
-eklerken 1 eklenecek sayaç değeri çünükü listviewe eklenen değer girilmiş oldu )
-- bu array kullanılarak 2 boyutlu başka bir array oluşturulacak. 
-- oluşan iki boyutlu array anomaly için fonksiyona yollanacak.
+24.07.2018 
+--görseller önemli
+--hatasız
+--form oluşturup personellerle grup ekleyecek değiştirme yapabilecek
+--gruptaki kişilere mail atabilinmesi lazım (İbrahim abiye mail adreesi açtırcaz)
+--gardien x için deneme maili atılacak
+--grubun bir yöneticisi olacak ve o kişiye mail kullanılacak
+--belirli kalıplarda sabit mail yollanacak
+--asenkron task kullanılacak arka planda 
+--log tutulacak kullanıcı ve tıkların hepsi
+freepic
+shoterstock
 
 
-060720018 ::::
+06.07.20018 ::::
 -Textbox ta verilen verinin testinin yapılarak anomaly verisinin alınması
 -Decide kısmına gönderilen verilen test edilecek veri olması gerekli 
 bu nedenle textboxtan(test verisi alan textbox) alınan verinin
@@ -26,3 +21,25 @@ double a convert işlemi yapılarak
 convertten elde edilen double 
 decide komutu sayesinde kontrol edilerek 
 anomaly olup olmadığı dönütü alınacak.
+
+
+03.07.2018 :::
+- dinamik array hazırla (Listlere bak )   List<double>
+- listviewe eleman ekledikçe (eğer listede varsa arrayin aynı indexinin arttır eğer yoksa dinamik arraye yeni eleman ekle 
+eklerken 1 eklenecek sayaç değeri çünükü listviewe eklenen değer girilmiş oldu )
+- bu array kullanılarak 2 boyutlu başka bir array oluşturulacak. 
+- oluşan iki boyutlu array anomaly için fonksiyona yollanacak.
+
+29.06.2018 Tarihli
+
+- Textboxtan girilen verinin bir id ile alınması ve id numarası ve sayısına bağlı olarak veri işleme yapılması 
+
+
+25.06.2018
+
+Bu haftanın konusu anomaly detection. 
+Detection işlemi için c# kullanılarak girilen veriler arasında anormal olanları bulan basit bir kod örneği oluşturulmaya çalışacak.
+Hafta sonunda proje için hedef; girilen renkler arasından farklı olanın program tarafından bulunması hadi kolay gelsin.
+:)
+
+
